@@ -7,4 +7,8 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'trackingGPS';
+
+  topFunction() {
+    document.documentElement.scrollTop = 0
+  }
 }

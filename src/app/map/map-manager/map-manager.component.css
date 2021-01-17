@@ -1,0 +1,92 @@
+#mapid {
+  min-height: 100vh;
+  width: 100%;
+}
+
+.map-menu{
+  bottom: 4.25rem;
+  position: fixed;
+  right: 1.25rem;
+  z-index: 1032;
+  border-radius: 40px;
+}
+
+.map-menu-info {
+  bottom: 10.05rem;
+  position: fixed;
+  right: 1.25rem;
+  z-index: 1032;
+  border-radius: 40px;
+  transition: 5s;
+}
+
+.map-menu-point {
+  bottom: 7.15rem;
+  position: fixed;
+  right: 1.25rem;
+  z-index: 1032;
+  border-radius: 40px;
+  color: #fff;
+  background-color: #3d9970;
+  border-color: #3d9970;
+  box-shadow: none;
+}
+
+
+#sel_map_provincia {
+  height: 38px!important;
+}
+
+#divCross {
+  z-index: 2000;
+  color: red;
+  padding: 0;
+  margin-top: -0.6rem;
+  margin-left: -0.76rem;
+}
+
+#geoLocSecondsRange, #inpTrackingRange, #inpAccuracy {
+  width: 9.5rem !important;
+}
+
+.collapseInfo {
+  display: block;
+  background-color: #1f2d3d;
+  //background-color: #f4f6f9;
+  width: 100%;
+  position: absolute;
+  z-index: 401;
+  opacity: 0.8;
+  transition: height 0.5s ease, box-shadow 0.5s ease;
+  height: 0rem !important;
+  overflow: hidden;
+  bottom: 0rem;
+}
+
+.collapseInfo.inInfo {
+  height: 20rem !important;
+}
+
+.collapsePoints {
+  display: block;
+  background-color: #1f2d3d;
+  //background-color: #28a745;
+  width: 100%;
+  position: absolute;
+  z-index: 401;
+  opacity: 0.8;
+  transition: height 0.5s ease, box-shadow 0.5s ease;
+  height: 0rem !important;
+  overflow: hidden;
+  bottom: 0rem;
+}
+
+.collapsePoints.inPoints {
+  height: 24rem !important;
+}
+
+.ag-header-cell-label{
+  justify-content: center;
+}
+
+
