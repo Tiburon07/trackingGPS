@@ -83,7 +83,10 @@ export class MapManagerComponent implements OnInit {
   private lyrSatellite = 'https://api.mapbox.com/styles/v1/tiburon07/ckjwqunda0eyr17o1u589jqro/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGlidXJvbjA3IiwiYSI6ImNramZ2em85NzNwZDQycG52M3NqbTZsbzQifQ.PyUsvBL-12oKzBldB2CPuA';
   private lyrNavigation = 'https://api.mapbox.com/styles/v1/tiburon07/ckjyan9y22jia17pubjlon48a/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGlidXJvbjA3IiwiYSI6ImNramZ2em85NzNwZDQycG52M3NqbTZsbzQifQ.PyUsvBL-12oKzBldB2CPuA';
   private lyrOutdoor = 'https://api.mapbox.com/styles/v1/tiburon07/ckjyaksnf1sk617mvwko9oih3/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGlidXJvbjA3IiwiYSI6ImNramZ2em85NzNwZDQycG52M3NqbTZsbzQifQ.PyUsvBL-12oKzBldB2CPuA';
-
+  //private lyrChiusi = 'http://localhost:8080/geoserver/cite/wms?service=WMS&version=1.1.0&request=GetMap&layers=cite%3Ageotiff_coverage&bbox=736207.762850706%2C4767241.08397384%2C736964.162850706%2C4768205.33397384&width=602&height=768&srs=EPSG%3A32632&styles=&format=application/openlayers';
+  //private lyrChiusi = 'http://localhost:8080/geoserver/cite/wms?service=WMS&version=1.1.0&request=GetMap&layers=cite%3Ageotiff_coverage&bbox=736207.762850706%2C4767241.08397384%2C736964.162850706%2C4768205.33397384&width=602&height=768&srs=EPSG%3A32632';
+  //private lyrChiusi = 'http://localhost:8080/geoserver/cite/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fjpeg&TRANSPARENT=true&STYLES&LAYERS=cite%3Ageotiff_coverage&exceptions=application%2Fvnd.ogc.se_inimage&SRS=EPSG%3A32632&WIDTH=603&HEIGHT=769&BBOX=736191.5231085839%2C4767292.166461344%2C736909.7040378565%2C4768208.383992377';
+  private lyrChiusi = 'http://localhost:8080/geoserver/cite/wms';
   //  ********* Setup Layer COntrol****************
   private objBaseMaps!: any;
   private objOverlays!: any;

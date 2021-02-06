@@ -24,6 +24,19 @@ export class MapManagerService {
       });
   }
 
+  getTif() {
+    this.spinner.show();
+    return fetch('/assets/img/chiusi.tif', { method: 'GET' })
+      .then(res => {
+        this.spinner.hide();
+        return res;
+      })
+      .catch(err => {
+        this.spinner.hide();
+        this.toaster.error(err);
+      });
+  }
+
   getCoordMunicipi() {
     this.spinner.show();
     return fetch('/assets/geojson/coordinateComuni.geojson', { method: 'GET' })

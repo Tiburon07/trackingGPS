@@ -1,0 +1,76 @@
+  <!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6"></div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
+            <li class="breadcrumb-item active">Login</li>
+          </ol>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col d-flex justify-content-center">
+          <!-- /.login-logo -->
+          <div class="card card-md card-outline card-primary">
+            <div class="card-header text-center">
+              <p class="h1">Login</p>
+            </div>
+            <div class="card-body">
+              <h5 class="text-center">Benvenuto!</h5>
+              <p>Inserisci le credenziale per accedere all'area privata</p>
+              <form name="loginUmsForm" #f="ngForm" (ngSubmit)="signIn(f)">
+                <div class="input-group pb-1 mb-1">
+                  <input type="email" required email ngModel #email="ngModel" name="email" class="form-control" placeholder="Email" pattern="^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$">
+                  <div class="input-group-append">
+                    <div class="input-group-text">
+                      <span class="fas fa-envelope"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="pb-2" *ngIf="email && email.errors && email.dirty && email.invalid">
+                  <small *ngIf="email.errors.required" class="text-danger pl-2">Email obbligatorio</small>
+                  <small *ngIf="email.errors.pattern" class="text-danger pl-2">Email non valido</small>
+                </div>
+                <div class="input-group pb-1 mb-1">
+                  <input type="password" required minlength="6" name="password" ngModel #password="ngModel" class="form-control" placeholder="Password">
+                  <div class="input-group-append">
+                    <div class="input-group-text">
+                      <span class="fas fa-lock"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="pb-2" *ngIf="password && password.errors && password.dirty && password.invalid">
+                  <small *ngIf="password.errors.required" class="text-danger pl-2">Password obbligatorio</small>
+                  <small *ngIf="password.errors.minlength" class="text-danger pl-2">Lunghezza minima 6 caratteri</small>
+                </div>
+                <div class="row">
+                  <div class="col-6"></div>
+                  <!-- /.col -->
+                  <div class="col-6">
+                    <button [disabled]="!f.valid" type="submit" class="btn btn-primary btn-block">Accedi</button>
+                  </div>
+                  <!-- /.col -->
+                </div>
+              </form>
+              <p class="pt-4">Non hai un account?! <a routerLink="/signup/ums" class="text-center">Registrati qui!</a></p>
+              <div class="row">
+                <div class="col-6">
+                  <a href="https://jwt.io/" target="_blank">
+                    <img id="img-jwt" src="/assets/img/jwt.svg" class="img-fluid img-thumbnail" alt="Sicurezza autenticazione con JWT">
+                  </a>
+                </div>
+              </div>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+        </div>
+      </div>
+      <!-- /.login-box -->
+    </div><!-- /.container-fluid -->
+</section>
+</div>

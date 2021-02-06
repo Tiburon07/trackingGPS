@@ -17,6 +17,15 @@ import { ErrorComponent } from './error/error.component';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { MapManagerService } from './map/map-manager/map-manager-service';
 
+//UMS
+import { UsersComponent } from './ums/users/users.component';
+import { UserService } from './ums/services/user.service';
+import { UserComponent } from './ums/user/user.component';
+import { UserDetailComponent } from './ums/user-detail/user-detail.component';
+import { UserProfileComponent } from './ums/user-profile/user-profile.component';
+import { LoginComponent } from './ums/login/login.component';
+import { SignupComponent } from './ums/signup/signup.component';
+
 // Dipendenze
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ToastrModule} from 'ngx-toastr';
@@ -39,6 +48,12 @@ registerLocaleData(localeIt);
     MenuComponent,
     ErrorComponent,
     MapManagerComponent,
+    UsersComponent,
+    UserComponent,
+    UserDetailComponent,
+    UserProfileComponent,
+    LoginComponent,
+    SignupComponent,
     BtnCellRenderer
   ],
   imports: [
