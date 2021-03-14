@@ -3,6 +3,8 @@ import * as $ from 'jquery';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { AG_GRID_LOCALE_IT } from '../../../environments/language'
+import * as Stomp from 'stompjs';
+import * as SockJS from 'sockjs-client';
 
 // Leaflet
 import * as L from 'leaflet';
@@ -83,10 +85,7 @@ export class MapManagerComponent implements OnInit {
   private lyrSatellite = 'https://api.mapbox.com/styles/v1/tiburon07/ckjwqunda0eyr17o1u589jqro/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGlidXJvbjA3IiwiYSI6ImNramZ2em85NzNwZDQycG52M3NqbTZsbzQifQ.PyUsvBL-12oKzBldB2CPuA';
   private lyrNavigation = 'https://api.mapbox.com/styles/v1/tiburon07/ckjyan9y22jia17pubjlon48a/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGlidXJvbjA3IiwiYSI6ImNramZ2em85NzNwZDQycG52M3NqbTZsbzQifQ.PyUsvBL-12oKzBldB2CPuA';
   private lyrOutdoor = 'https://api.mapbox.com/styles/v1/tiburon07/ckjyaksnf1sk617mvwko9oih3/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGlidXJvbjA3IiwiYSI6ImNramZ2em85NzNwZDQycG52M3NqbTZsbzQifQ.PyUsvBL-12oKzBldB2CPuA';
-  //private lyrChiusi = 'http://localhost:8080/geoserver/cite/wms?service=WMS&version=1.1.0&request=GetMap&layers=cite%3Ageotiff_coverage&bbox=736207.762850706%2C4767241.08397384%2C736964.162850706%2C4768205.33397384&width=602&height=768&srs=EPSG%3A32632&styles=&format=application/openlayers';
-  //private lyrChiusi = 'http://localhost:8080/geoserver/cite/wms?service=WMS&version=1.1.0&request=GetMap&layers=cite%3Ageotiff_coverage&bbox=736207.762850706%2C4767241.08397384%2C736964.162850706%2C4768205.33397384&width=602&height=768&srs=EPSG%3A32632';
-  //private lyrChiusi = 'http://localhost:8080/geoserver/cite/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fjpeg&TRANSPARENT=true&STYLES&LAYERS=cite%3Ageotiff_coverage&exceptions=application%2Fvnd.ogc.se_inimage&SRS=EPSG%3A32632&WIDTH=603&HEIGHT=769&BBOX=736191.5231085839%2C4767292.166461344%2C736909.7040378565%2C4768208.383992377';
-  private lyrChiusi = 'http://localhost:8080/geoserver/cite/wms';
+
   //  ********* Setup Layer COntrol****************
   private objBaseMaps!: any;
   private objOverlays!: any;
@@ -114,38 +113,44 @@ export class MapManagerComponent implements OnInit {
   private outdoorsMapOptions = { attribution: '', maxZoom: 18, minNativeZoom: 1, id: 'outdoor', tileSize: 512, zoomOffset: -1, accessToken: 'no-token' };
 
   // AG-GRID
-  private gridParams: any;
-  private gridApi: any;
-  private gridColumnApi: any;
-  public defaultColDef: any;
-  public localeText = AG_GRID_LOCALE_IT
+  // private gridParams: any;
+  // private gridApi: any;
+  // private gridColumnApi: any;
+  // public defaultColDef: any;
+  // public localeText = AG_GRID_LOCALE_IT
 
-  public columnDefs = [
-    { headerName: "Azioni",
-      field: 'azioni',
-      cellRenderer: 'btnCellRenderer',
-      cellRendererParams: {
-        clicked: function(field: any) {
-          console.log(field);
-          alert(`${field} was clicked`);
-        }
-      },
-      minWidth: 200
-    },
-    { headerName: "ID Marker",
-      field: 'marker'}
-  ];
+  // public columnDefs = [
+  //   { headerName: "Azioni",
+  //     field: 'azioni',
+  //     cellRenderer: 'btnCellRenderer',
+  //     cellRendererParams: {
+  //       clicked: function(field: any) {
+  //         console.log(field);
+  //         alert(`${field} was clicked`);
+  //       }
+  //     },
+  //     minWidth: 200
+  //   },
+  //   { headerName: "ID Marker",
+  //     field: 'marker'}
+  // ];
 
-  public gridOptions = {
-    rowClass : 'text-center justify-content-center'
-  }
+  // public gridOptions = {
+  //   rowClass : 'text-center justify-content-center'
+  // }
 
-  public frameworkComponents = {
-    btnCellRenderer: BtnCellRenderer
-  };
+  // public frameworkComponents = {
+  //   btnCellRenderer: BtnCellRenderer
+  // };
 
-  public rowData = [];
-  private AG_GRID_LOCALE_IT: any;
+  // public rowData = [];
+  // private AG_GRID_LOCALE_IT: any;
+
+  //WEB_SOCKET
+  webSocketEndPoint: string = 'https://javaspringpoint.herokuapp.com/ws';
+  //webSocketEndPoint: string = 'http://localhost:8080/ws';
+  topic: string = "/topic/greetings";
+  stompClient: any;
 
   constructor(private spinner: NgxSpinnerService, private toaster: ToastrService, private service: MapManagerService) {
     this.confiniComune = L.layerGroup();
@@ -160,7 +165,7 @@ export class MapManagerComponent implements OnInit {
     };
     this.ctlLayers = L.control.layers(this.objBaseMaps, this.objOverlays);
     this.ctlScale = L.control.scale({ position: 'bottomleft', metric: true, maxWidth: 200, imperial: false });
-    }
+  }
 
   ngOnInit(): void {
 
@@ -182,22 +187,23 @@ export class MapManagerComponent implements OnInit {
     // Layers
     this.municipiMap();
     this.clasterMunicipiMap();
+
   }
 
-  onGridReady(params:any) {
-    this.gridParams = params;
-    this.gridApi = params.api;
-    this.gridColumnApi = params.columnApi;
-    $('.ag-header-cell-label').addClass('justify-content-center')
-  }
+  // onGridReady(params:any) {
+  //   this.gridParams = params;
+  //   this.gridApi = params.api;
+  //   this.gridColumnApi = params.columnApi;
+  //   $('.ag-header-cell-label').addClass('justify-content-center')
+  // }
 
-  onFirstDataRendered(params:any) {
-    params.api.sizeColumnsToFit();
-  }
+  // onFirstDataRendered(params:any) {
+  //   params.api.sizeColumnsToFit();
+  // }
 
-  onGridSizeChanged(params:any) {
-    params.api.sizeColumnsToFit();
-  }
+  // onGridSizeChanged(params:any) {
+  //   params.api.sizeColumnsToFit();
+  // }
 
   onLocationFound(e: any): void {
       e = this.randomizePos(e);
@@ -213,6 +219,8 @@ export class MapManagerComponent implements OnInit {
       }
 
       this.posPrevious = this.posCurrent
+
+      this._send(JSON.stringify([e.latlng.lat, e.latlng.lng, e.accuracy]))
   }
 
   onLocationError(e: { message: any; }) {
@@ -267,7 +275,6 @@ export class MapManagerComponent implements OnInit {
     }
   }
 
-
   sliderSecondsChange(e: any) {
     this.intervalGeoLoc = e.target.value;
     if ($('#switchLoc').prop('checked')) {
@@ -314,33 +321,40 @@ export class MapManagerComponent implements OnInit {
       const mrkBreadcrumb = L.circle([this.posCurrent.lat, this.posCurrent.lng], { radius, color: 'green' }).addTo(this.map);
       mrkBreadcrumb.bindPopup(`<h4>${L.Util.stamp(mrkBreadcrumb)}`)
       this.lyrBreadcrumbs.addLayer(mrkBreadcrumb);
-      this.drawPointGrid(this.lyrBreadcrumbs);
+      // this.drawPointGrid(this.lyrBreadcrumbs);
     }
   }
 
-  drawPointGrid(lyrBreadcrumbs:any){
-    this.rowData = [];
-    lyrBreadcrumbs.eachLayer((lyr:any)=>{
-      const point = { marker : L.Util.stamp(lyr)}
-      // @ts-ignore
-      this.rowData.push(point)
-    })
-    this.gridApi.setRowData(this.rowData);
-    this.gridApi.sizeColumnsToFit();
-  }
+  // drawPointGrid(lyrBreadcrumbs:any){
+  //   this.rowData = [];
+  //   lyrBreadcrumbs.eachLayer((lyr:any)=>{
+  //     const point = { marker : L.Util.stamp(lyr)}
+  //     // @ts-ignore
+  //     this.rowData.push(point)
+  //   })
+  //   this.gridApi.setRowData(this.rowData);
+  //   this.gridApi.sizeColumnsToFit();
+  // }
 
   poulatePoints(point: PosizioneGPS) {
     console.log(point);
   }
 
   onClickMapMenuPoint(e:any){
-    const collPoints = $('.collapsePoints');
-    (collPoints.hasClass('inPoints')) ? collPoints.removeClass('inPoints') : collPoints.addClass('inPoints');
-
-    const collInfo = $('.collapseInfo');
-    if(collInfo.hasClass('inInfo')){
-      collInfo.removeClass('inInfo')
+    console.log(this.stompClient)
+    if(this.stompClient){
+      this._disconnect();
+      this.stompClient = null;
+    }else{
+      this._connect();
     }
+
+    // const collPoints = $('.collapsePoints');
+    // (collPoints.hasClass('inPoints')) ? collPoints.removeClass('inPoints') : collPoints.addClass('inPoints');
+    // const collInfo = $('.collapseInfo');
+    // if(collInfo.hasClass('inInfo')){
+    //   collInfo.removeClass('inInfo')
+    // }
   }
 
   onClickMapMenuInfo(e: any) {
@@ -381,5 +395,59 @@ export class MapManagerComponent implements OnInit {
   }
 
   onClickMapMenu(e: any) { this.sortSelect('map_province');}
+
+  _connect() {
+    console.log("Initialize WebSocket Connection");
+    let ws = new SockJS(this.webSocketEndPoint);
+    this.stompClient = Stomp.over(ws);
+    const _this = this;
+    _this.stompClient.connect({}, function (frame:any) {
+      //console.log(frame);
+      $('.map-menu-point').css({"background-color": "green"})
+      _this.toaster.success("Connesso");
+        _this.stompClient.subscribe(_this.topic, function (sdkEvent:any) {
+            _this.onMessageReceived(JSON.parse(sdkEvent.body));
+        });
+        //_this.stompClient.reconnect_delay = 2000;
+    }, this.errorCallBack);
+  };
+
+  _disconnect() {
+      if (this.stompClient !== null) {
+          this.stompClient.disconnect();
+          this.toaster.error("Disconnesso");
+      }
+      console.log("Disconnected");
+      $('.map-menu-point').css({"background-color": "red"})
+  }
+
+  // on error, schedule a reconnection attempt
+  errorCallBack(error:any) {
+      console.log("errorCallBack -> " + error)
+      setTimeout(() => {
+          this._connect();
+      }, 5000);
+  }
+
+  /**
+  * Send message to sever via web socket
+  * @param {*} message 
+  */
+  _send(message:any) {
+      if(this.stompClient){
+        console.log("calling logout api via web socket");
+        this.stompClient.send("/app/hello", {}, JSON.stringify(message));
+      }
+  }
+
+  onMessageReceived(retposition:any) {
+      let position = JSON.parse(retposition);
+      this.markerLoc.remove();
+      this.circleLoc.remove();
+      this.markerLoc = L.marker([position[0], position[1]], { icon: L.divIcon({ iconSize: [24, 12], iconAnchor: [12, 12], html: '<i class="fa fa-crosshairs fa-2x text-danger"></i>', className: 'divCross' })});
+      this.circleLoc = L.circle([position[0], position[1]], position[2]/2);
+      this.markerLoc.addTo(this.map);
+      this.circleLoc.addTo(this.map);
+  }
 }
 
